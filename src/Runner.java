@@ -11,12 +11,18 @@ public class Runner {
     public Graphics panelG;
     public Image[] turn;
     public int index;
+    public int[][] board;
 
     public static void main(String[] args) throws InterruptedException {
         new Runner();
     }
 
     public Runner() throws InterruptedException {
+        board = new int[][]{
+                {-1, -1, -1},
+                {-1, -1, -1},
+                {-1, -1, -1}};
+
         this.X = Toolkit.getDefaultToolkit().getImage("src/res/X.png");
         this.O = Toolkit.getDefaultToolkit().getImage("src/res/O.png");
         this.turn = new Image[]{X, O};
@@ -25,13 +31,20 @@ public class Runner {
         this.panelG = panel.getGraphics();
         panelG.clearRect(0, 0, 256, 256);
 
-        Thread.sleep(100);
-        setupBoard(panel.getGraphics());
+        while (true){
+            updater(panelG);
+        }
     }
 
     public void setupWindow(){
         frame = new JFrame("Tic Tac Toe");
-        panel = new JPanel();
+        panel = new JPanel(){
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+                updater(g);
+            }
+        };
 
         Dimension expectedDimension = new Dimension(300, 300);
 
@@ -87,32 +100,44 @@ public class Runner {
             @Override
             public void mouseClicked(MouseEvent e) {
 
+                int arrX = 0;
+                int arrY = 0;
                 int tempX = e.getX();
                 int tempY = e.getY();
 
                 if(e.getX() > 0 && e.getX() < panel.getWidth() / 3){
                     tempX = (panel.getWidth() / 3) / 5;
+                    arrX = 0;
                 }else if(e.getX() > panel.getWidth() / 3 && e.getX() < 2 * panel.getWidth() / 3){
                     tempX = (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
+                    arrX = 1;
                 }else if(e.getX() > 2 * panel.getWidth() / 3 && e.getX() < panel.getWidth()){
                     tempX = (2 * panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
+                    arrX = 2;
                 }
                 if(e.getY() > 0 && e.getY() < panel.getWidth() / 3){
                     tempY = (panel.getWidth() / 3) / 5;
+                    arrY = 0;
                 }else if(e.getY() > panel.getWidth() / 3 && e.getY() < 2 * panel.getWidth() / 3){
                     tempY = (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
+                    arrY = 1;
                 }else if(e.getY() > 2 * panel.getWidth() / 3 && e.getY() < panel.getWidth()){
                     tempY = (2 * panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
+                    arrY = 2;
                 }
 
-                Drawinator.DrawQuadIMG(tempX, tempY, turn[index], panelG);
-                Drawinator.DrawQuadIMG(50, 50, turn[index], frame.getGraphics());
+                board[arrY][arrX] = index;
 
                 if(index == 1){
                     index = 0;
                 }else {
                     index = 1;
                 }
+
+                //Drawinator.DrawQuadIMG(tempX, tempY, turn[index], panelG);
+                //Drawinator.DrawQuadIMG(50, 50, turn[index], frame.getGraphics());
+
+                System.out.println(board[0][0]);
             }
 
             @Override
@@ -140,11 +165,32 @@ public class Runner {
         frame.setVisible(true);
     }
 
-    public void setupBoard(Graphics g){
+    public void drawBoard(Graphics g){
         g.drawLine(panel.getWidth() / 3, 0, panel.getWidth() / 3, panel.getHeight());
         g.drawLine(2 * panel.getWidth() / 3, 0, 2 * panel.getWidth() / 3, panel.getHeight());
         g.drawLine(0, panel.getWidth() / 3, panel.getHeight(), panel.getWidth() / 3);
         g.drawLine(0, 2 * panel.getWidth() / 3, panel.getHeight(), 2 * panel.getWidth() / 3);
+    }
+
+    public void drawBoardPieces(Graphics g) {
+
+        for (int[] i: board) {
+            for (int j: i) {
+
+            }
+        }
+
+
+    }
+
+    public void updater(Graphics g){
+        panel.repaint();
+        drawBoard(g);
+
+        drawBoardPieces(g);
+
+
+
     }
 
 
