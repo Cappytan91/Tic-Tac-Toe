@@ -25,8 +25,8 @@ public class Runner {
 
         this.X = Toolkit.getDefaultToolkit().getImage("src/res/X.png");
         this.O = Toolkit.getDefaultToolkit().getImage("src/res/O.png");
-        this.turn = new Image[]{X, O};
-        this.index = 0;
+        this.turn = new Image[]{null, X, O};
+        this.index = 1;
         setupWindow();
         this.panelG = panel.getGraphics();
         panelG.clearRect(0, 0, 256, 256);
@@ -102,42 +102,33 @@ public class Runner {
 
                 int arrX = 0;
                 int arrY = 0;
-                int tempX = e.getX();
-                int tempY = e.getY();
 
                 if(e.getX() > 0 && e.getX() < panel.getWidth() / 3){
-                    tempX = (panel.getWidth() / 3) / 5;
                     arrX = 0;
                 }else if(e.getX() > panel.getWidth() / 3 && e.getX() < 2 * panel.getWidth() / 3){
-                    tempX = (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
                     arrX = 1;
                 }else if(e.getX() > 2 * panel.getWidth() / 3 && e.getX() < panel.getWidth()){
-                    tempX = (2 * panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
                     arrX = 2;
                 }
                 if(e.getY() > 0 && e.getY() < panel.getWidth() / 3){
-                    tempY = (panel.getWidth() / 3) / 5;
                     arrY = 0;
                 }else if(e.getY() > panel.getWidth() / 3 && e.getY() < 2 * panel.getWidth() / 3){
-                    tempY = (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
                     arrY = 1;
                 }else if(e.getY() > 2 * panel.getWidth() / 3 && e.getY() < panel.getWidth()){
-                    tempY = (2 * panel.getWidth() / 3) + (panel.getWidth() / 3) / 5;
                     arrY = 2;
                 }
 
-                board[arrY][arrX] = index;
-
-                if(index == 1){
-                    index = 0;
-                }else {
-                    index = 1;
+                if(board[arrY][arrX] == -1) {
+                    board[arrY][arrX] = index;
+                    if(index == 2){
+                        index = 1;
+                    }else {
+                        index = 2;
+                    }
                 }
 
-                //Drawinator.DrawQuadIMG(tempX, tempY, turn[index], panelG);
-                //Drawinator.DrawQuadIMG(50, 50, turn[index], frame.getGraphics());
+                checkWin();
 
-                System.out.println(board[0][0]);
             }
 
             @Override
@@ -174,12 +165,43 @@ public class Runner {
 
     public void drawBoardPieces(Graphics g) {
 
-        for (int[] i: board) {
-            for (int j: i) {
-
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if(board[i][j] != -1){
+                    Drawinator.DrawQuadIMG((j) * (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5, (i) * (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5 , turn[board[i][j]], g);
+                }
             }
         }
 
+
+    }
+
+    public void checkWin(){
+        int lineTotal = 0;
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                lineTotal += board[i][j];
+            }
+            System.out.println(lineTotal);
+            if(lineTotal == 6){
+                System.out.println("O wins");
+            }else if(lineTotal == 3) {
+                System.out.println("X wins");
+            }
+            lineTotal = 0;
+
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            lineTotal += board[i][i];
+        }
+        System.out.println(lineTotal);
+        if(lineTotal == 6){
+            System.out.println("O wins");
+        }else if(lineTotal == 3) {
+            System.out.println("X wins");
+        }
+        lineTotal = 0;
 
     }
 
@@ -188,7 +210,6 @@ public class Runner {
         drawBoard(g);
 
         drawBoardPieces(g);
-
 
 
     }
