@@ -19,9 +19,9 @@ public class Runner {
 
     public Runner() throws InterruptedException {
         board = new int[][]{
-                {-1, -1, -1},
-                {-1, -1, -1},
-                {-1, -1, -1}};
+                {-10, -10, -10},
+                {-10, -10, -10},
+                {-10, -10, -10}};
 
         this.X = Toolkit.getDefaultToolkit().getImage("src/res/X.png");
         this.O = Toolkit.getDefaultToolkit().getImage("src/res/O.png");
@@ -118,7 +118,7 @@ public class Runner {
                     arrY = 2;
                 }
 
-                if(board[arrY][arrX] == -1) {
+                if(board[arrY][arrX] == -10) {
                     board[arrY][arrX] = index;
                     if(index == 2){
                         index = 1;
@@ -167,7 +167,7 @@ public class Runner {
 
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
-                if(board[i][j] != -1){
+                if(board[i][j] != -10){
                     Drawinator.DrawQuadIMG((j) * (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5, (i) * (panel.getWidth() / 3) + (panel.getWidth() / 3) / 5 , turn[board[i][j]], g);
                 }
             }
@@ -176,17 +176,19 @@ public class Runner {
 
     }
 
-    public void checkWin(){
+    public boolean[] checkWin(){            // returns array of 2 booleans, first is if win, 2nd is type (true == x, false == o)
         int lineTotal = 0;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 lineTotal += board[i][j];
             }
-            System.out.println(lineTotal);
+            //System.out.println(lineTotal);
             if(lineTotal == 6){
-                System.out.println("O wins");
+                System.out.println("O wins across");
+                return new boolean[]{true, false};
             }else if(lineTotal == 3) {
-                System.out.println("X wins");
+                System.out.println("X wins across");
+                return new boolean[]{true, false};
             }
             lineTotal = 0;
 
@@ -195,14 +197,37 @@ public class Runner {
         for (int i = 0; i < board.length; i++) {
             lineTotal += board[i][i];
         }
-        System.out.println(lineTotal);
+        //System.out.println(lineTotal);
         if(lineTotal == 6){
-            System.out.println("O wins");
+            System.out.println("O wins l2r");
+            return new boolean[]{true, false};
         }else if(lineTotal == 3) {
-            System.out.println("X wins");
+            System.out.println("X wins l2r");
+            return new boolean[]{true, true};
         }
         lineTotal = 0;
 
+        for (int i = board.length - 1; i >= 0; i--) {
+            lineTotal += board[i][Math.abs(i-2)];
+
+        }
+        //System.out.println(lineTotal);
+        if(lineTotal == 6){
+            System.out.println("O wins r2l");
+            return new boolean[]{true, false};
+        }else if(lineTotal == 3) {
+            System.out.println("X wins r2l");
+            return new boolean[]{true, true};
+        }
+
+        return new boolean[]{false, false};
+    }
+
+    public void resetGame(){
+        board = new int[][]{
+                {-10, -10, -10},
+                {-10, -10, -10},
+                {-10, -10, -10}};
     }
 
     public void updater(Graphics g){
