@@ -8,7 +8,7 @@ public class Runner {
     public JFrame frame;
     public JPanel panel;
     public Image X, O;
-    public Graphics panelG;
+    public Graphics panelG, frameG;
     public Image[] turn;
     public int index;
     public int[][] board;
@@ -29,6 +29,7 @@ public class Runner {
         this.index = 1;
         setupWindow();
         this.panelG = panel.getGraphics();
+        this.frameG = frame.getGraphics();
         panelG.clearRect(0, 0, 256, 256);
 
         while (true){
@@ -37,7 +38,13 @@ public class Runner {
     }
 
     public void setupWindow(){
-        frame = new JFrame("Tic Tac Toe");
+        frame = new JFrame("Tic Tac Toe"){
+            @Override
+            public void paint(Graphics g) {
+                super.paint(g);
+                drawTurn();
+            }
+        };
         panel = new JPanel(){
             @Override
             public void paint(Graphics g) {
@@ -127,7 +134,20 @@ public class Runner {
                     }
                 }
 
-                checkWin();
+                boolean[] win = checkWin();
+                if(win[0]){
+                    if(win[1]){
+                        JOptionPane.showMessageDialog(null, "X wins", "Winner", JOptionPane.WARNING_MESSAGE);
+                    }else if(!win[1]){
+                        JOptionPane.showMessageDialog(null, "O wins", "Winner", JOptionPane.WARNING_MESSAGE);
+                    }
+                    resetGame();
+                }
+
+                if(isDraw()){
+                    JOptionPane.showMessageDialog(null, "No Winners :(", "Draw", JOptionPane.WARNING_MESSAGE);
+                    resetGame();
+                }
 
             }
 
@@ -188,7 +208,23 @@ public class Runner {
                 return new boolean[]{true, false};
             }else if(lineTotal == 3) {
                 System.out.println("X wins across");
+                return new boolean[]{true, true};
+            }
+            lineTotal = 0;
+
+        }
+
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                lineTotal += board[j][i];
+            }
+            //System.out.println(lineTotal);
+            if(lineTotal == 6){
+                System.out.println("O wins down");
                 return new boolean[]{true, false};
+            }else if(lineTotal == 3) {
+                System.out.println("X wins down");
+                return new boolean[]{true, true};
             }
             lineTotal = 0;
 
@@ -223,6 +259,22 @@ public class Runner {
         return new boolean[]{false, false};
     }
 
+    public boolean isDraw(){
+        int amountOfEmptyPieces = 0;
+        for (int[] row: board) {
+            for (int col: row) {
+                if(col == -10){
+                    amountOfEmptyPieces++;
+                }
+            }
+        }
+        if(amountOfEmptyPieces == 0){
+            return true;
+        }
+
+        return false;
+    }
+
     public void resetGame(){
         board = new int[][]{
                 {-10, -10, -10},
@@ -230,10 +282,15 @@ public class Runner {
                 {-10, -10, -10}};
     }
 
+    public void drawTurn(){
+        Drawinator.DrawQuadIMG(50, 50, turn[index], frameG);
+    }
+
     public void updater(Graphics g){
         panel.repaint();
-        drawBoard(g);
+        frame.repaint();
 
+        drawBoard(g);
         drawBoardPieces(g);
 
 
