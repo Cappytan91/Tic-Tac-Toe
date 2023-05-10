@@ -42,7 +42,6 @@ public class Runner {
             @Override
             public void paint(Graphics g) {
                 super.paint(g);
-                drawTurn();
             }
         };
         panel = new JPanel(){
@@ -69,7 +68,7 @@ public class Runner {
 
         frame.add(box);
 
-
+        panel.setDoubleBuffered(true);
         frame.setSize(1000, 1000);
         frame.setIconImage(X);
         this.panelG = panel.getGraphics();
@@ -132,6 +131,8 @@ public class Runner {
                     }else {
                         index = 2;
                     }
+                    frame.repaint();
+                    drawTurn();
                 }
 
                 boolean[] win = checkWin();
@@ -283,13 +284,13 @@ public class Runner {
     }
 
     public void drawTurn(){
-        Drawinator.DrawQuadIMG(50, 50, turn[index], frameG);
+        Drawinator.DrawQuadIMG(50, 50, turn[index], frame.getGraphics());
     }
 
     public void updater(Graphics g){
         panel.repaint();
-        frame.repaint();
 
+        drawTurn();
         drawBoard(g);
         drawBoardPieces(g);
 
